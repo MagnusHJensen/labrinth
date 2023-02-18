@@ -464,6 +464,17 @@ impl Version {
         .execute(&mut *transaction)
         .await?;
 
+        sqlx::query!(
+            "
+            UPDATE mods
+            SET updated = NOW()
+            WHERE id = $1
+            ",
+            project_id.mod_id
+        )
+        .execute(&mut *transaction)
+        .await?;
+
         crate::database::models::Project::update_game_versions(
             ProjectId(project_id.mod_id),
             &mut *transaction,
